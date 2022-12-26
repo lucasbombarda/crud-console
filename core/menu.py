@@ -2,7 +2,7 @@ from art import tprint
 from tabulate import tabulate
 from utils.constants import LIBRARY_NAME
 from registration import register_user, register_book, register_customer, register_local, register_order, register_price_list, register_publisher
-from lists import list_books, list_customers
+from lists import list_books, list_customers, list_local
 from utils.cls import cls
 
 class Menus:
@@ -13,7 +13,7 @@ class Menus:
 
     def _main_header(self, name):
         cls()
-        tprint(name)
+        tprint(name)    
         print(f"Usuário: {self._user}\n")
 
     def _menu_header(self):
@@ -97,7 +97,15 @@ class Menus:
                 case 5:
                     register_order.RegisterOrder(self._user)
                 case 6:
-                    register_local.RegisterLocal(self._user)
+                    cls()
+                    local = register_local.RegisterLocal(self._user)
+                    if local.register():
+                        cls()
+                        input("Local cadastrado com sucesso!")
+                    else:
+                        cls()
+                        input("Erro ao cadastrar local!")
+                    cls()
                 case 7:
                     register_price_list.RegisterPriceList(self._user)
                 case 9:
@@ -121,10 +129,10 @@ class Menus:
         _headers = ["Opção", "Ação"]
         _menu = [
             [1, "Listar todos os clientes"],
-            [2, "Pesquisar clientes"],
+            [2, "Pesquisa detalhada cliente"],
             [3, "Listar todos os livros"],
-            [4, "Pedido"],
-            [5, "Estoque"],
+            [4, "Pesquisa detalhada livro"],
+            [5, "Listar locais de estoque"],
             [0, "Voltar ao menu anterior"],
         ]
         print(tabulate(_menu, _headers, tablefmt="psql"))
@@ -139,8 +147,8 @@ class Menus:
                 case 1:
                     cls()
                     print("Lista de todos os clientes:\n\n")
-                    customer = list_customers.ListCustomer(self._user)
-                    _info = customer.list_customers()
+                    _customer = list_customers.ListCustomer(self._user)
+                    _info = _customer.list_customers()
                     print(tabulate(_info[0], headers=_info[1]))
                     input("\n\nAperte ENTER para voltar.")
                 case 2:
@@ -148,8 +156,17 @@ class Menus:
                 case 3:
                     cls()
                     print("Lista de todos os livros:\n\n")
-                    books = list_books.ListBooks(self._user)
-                    _info = books.list_books()
+                    _books = list_books.ListBooks(self._user)
+                    _info = _books.list_books()
+                    print(tabulate(_info[0], headers=_info[1]))
+                    input("\n\nAperte ENTER para voltar.")
+                case 4:
+                    ...
+                case 5:
+                    cls()
+                    print("Lista de todos os locais de estoque:\n\n")
+                    _local = list_local.ListLocals(self._user)
+                    _info = _local.list_local()
                     print(tabulate(_info[0], headers=_info[1]))
                     input("\n\nAperte ENTER para voltar.")
                 case 0:
@@ -180,7 +197,7 @@ class Menus:
                 case 2:
                     self._answer_sub_menu_2()
                 case 3:
-                    print("Usuário escolheu 3")
+                    input("Usuário escolheu 3")
                 case 0:
                     cls()
                     input("Saindo do sistema...")

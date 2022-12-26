@@ -62,6 +62,7 @@ class Database():
 
         __name = self.cursor.execute(f"SELECT login FROM user WHERE login = '{login}' AND password = '{_en_pwd}' AND active = '1'").fetchone()
         if __name:
+            self._disconnect()
             return str(__name[0])
         
         self._disconnect()
@@ -183,6 +184,21 @@ class Database():
             self._disconnect()
             return False
 
+    def insert_into_local(self, local_info) -> bool:
+        try:
+            self._connect()
+            _active = local_info["active"]
+            _description = local_info["description"].upper()
+
+            self.cursor.execute(f"INSERT INTO local (active, description) VALUES ('{_active}', '{_description}')")
+            self._conn.commit()
+            self._disconnect()
+            return True
+        except Exception as e:
+            input(f"ERRO - Contate o administrador - {e}")
+            self._disconnect()
+            return False
+
     def verify_customer_exists_by_id(self, customer_id) -> bool:
         self._connect()
         
@@ -253,6 +269,19 @@ class Database():
         FROM book b LEFT JOIN publisher p ON p.publisher_id = b.publisher_id
         """
 
+        _res = self.cursor.execute(_query).fetchall()
+        _cols = [col[0] for col in self.cursor.description]
+        self._disconnect()
+        return _res, _cols
+
+    def get_local_info(self) -> list:
+        self._connect()
+        _query = """ SELECT local_id AS 'CÓD. LOCAL',
+            active AS 'ATIVO',
+            description AS 'DESCRIÇÃO'
+            FROM local
+        """
+        
         _res = self.cursor.execute(_query).fetchall()
         _cols = [col[0] for col in self.cursor.description]
         self._disconnect()
