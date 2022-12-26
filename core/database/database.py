@@ -199,6 +199,22 @@ class Database():
             self._disconnect()
             return False
 
+    def insert_into_price_list(self, price_list_info) -> bool:
+        try:
+            self._connect()
+            _now = date_now()
+            _active = price_list_info["active"]
+            _description = price_list_info["name"].upper()
+            self.cursor.execute(f"INSERT INTO price_list (active, description, registration_date, update_date) VALUES ('{_active}', '{_description}', '{_now}', '{_now}')")
+            self._conn.commit()
+            self._disconnect()
+            return True
+
+        except Exception as e:
+            input(f"ERRO - Contate o administrador - {e}")
+            self._disconnect()
+            return False
+
     def verify_customer_exists_by_id(self, customer_id) -> bool:
         self._connect()
         
@@ -276,12 +292,12 @@ class Database():
 
     def get_local_info(self) -> list:
         self._connect()
-        _query = """ SELECT local_id AS 'CÓD. LOCAL',
+        _query = """SELECT local_id AS 'CÓD. LOCAL',
             active AS 'ATIVO',
             description AS 'DESCRIÇÃO'
             FROM local
         """
-        
+
         _res = self.cursor.execute(_query).fetchall()
         _cols = [col[0] for col in self.cursor.description]
         self._disconnect()
