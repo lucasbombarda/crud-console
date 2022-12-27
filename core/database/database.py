@@ -204,8 +204,8 @@ class Database():
             self._connect()
             _now = date_now()
             _active = price_list_info["active"]
-            _description = price_list_info["name"].upper()
-            self.cursor.execute(f"INSERT INTO price_list (active, description, registration_date, update_date) VALUES ('{_active}', '{_description}', '{_now}', '{_now}')")
+            _name = price_list_info["name"].upper()
+            self.cursor.execute(f"INSERT INTO price_list (active, name, registration_date, update_date) VALUES ('{_active}', '{_name}', '{_now}', '{_now}')")
             self._conn.commit()
             self._disconnect()
             return True
@@ -296,6 +296,21 @@ class Database():
             active AS 'ATIVO',
             description AS 'DESCRIÇÃO'
             FROM local
+        """
+
+        _res = self.cursor.execute(_query).fetchall()
+        _cols = [col[0] for col in self.cursor.description]
+        self._disconnect()
+        return _res, _cols
+
+    def get_price_list_info(self) -> list:
+        self._connect()
+        _query = """SELECT price_list_id AS 'CÓD. TAB. PREÇO',
+            active AS 'ATIVO',
+            name AS 'TAB. DE PREÇO',
+            registration_date AS 'REGISTRADA EM',
+            update_date AS 'MODIFICADA EM'
+        FROM price_list
         """
 
         _res = self.cursor.execute(_query).fetchall()
