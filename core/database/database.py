@@ -317,3 +317,71 @@ class Database():
         _cols = [col[0] for col in self.cursor.description]
         self._disconnect()
         return _res, _cols
+
+    def search_customer_with_filters(self, filters:dict) -> list:
+        self._connect()
+        _query = """SELECT cus.customer_id AS 'CÓD. CLI.',
+            cus.active AS 'SIT. CLI.',
+            cus.name AS 'CLIENTE',
+            cus.email AS 'E-MAIL',
+            cus.registration_id AS 'CPF',
+            cus.registration_date AS 'DT. CAD. CLI.',
+            addr.address_type AS 'TP. ENDEREÇO',
+            addr.street_name AS 'RUA',
+            addr.number AS 'NÚMERO',
+            addr.city AS 'CIDADE',
+            addr.state AS 'ESTADO',
+            addr.street_id AS 'CEP',
+            addr.reference AS 'COMP.',
+            cont.contact_type AS 'TP. CONTATO',
+            cont.ddd AS 'DDD',
+            cont.tel_number AS 'CONTATO',
+            cont.registration_date AS 'DT. CAD. CONT.'
+            
+        FROM customer cus 
+            LEFT JOIN customer_address addr ON addr.customer_id = cus.customer_id 
+            LEFT JOIN customer_contact cont ON cont.customer_id = cus.customer_id
+
+        """
+        
+        _comp = ""
+        if filters["customer_id"]:
+            _comp += f'AND cus.customer_id = \'{filters["customer_id"]}\' '
+        if filters["active"]:
+            _comp += f'AND cus.active = \'{filters["active"]}\' '
+        if filters["name"]:
+            _comp += f'AND cus.name LIKE \'%{filters["name"]}%\' '
+        if filters["email"]:
+            _comp += f'AND cus.email LIKE \'%{filters["email"]}%\' '
+        if filters["registration_id"]:
+            _comp += f'AND cus.registration_id = \'{filters["registration_id"]}\' '
+        if filters["street_name"]:
+            _comp += f'AND addr.street_name LIKE \'%{filters["street_name"]}%\' '
+        if filters["number"]:
+            _comp += f'AND addr.number = \'{filters["number"]}\' '
+        if filters["city"]:
+            _comp += f'AND addr.city LIKE \'%{filters["city"]}%\' '
+        if filters["state"]:
+            _comp += f'AND addr.state = \'{filters["state"]}\' '
+        if filters["street_id"]:
+            _comp += f'AND addr.street_id = \'{filters["street_id"]}\' '
+        if filters["reference"]:
+            _comp += f'AND addr.reference LIKE \'%{filters["reference"]}%\' '
+        if filters["contact_type"]:
+            _comp += f'AND cont.contact_type = \'{filters["contact_type"]}\' '
+        if filters["ddd"]:
+            _comp += f'AND cont.ddd = \'{filters["ddd"]}\' '
+        if filters["tel_number"]:
+            _comp += f'AND cont.tel_number = \'{filters["tel_number"]}\' '
+        if filters["active_number"]:
+            _comp += f'AND cont.active_number = \'{filters["active_number"]}\' '
+
+        if _comp:
+            _comp = _comp[3:]
+            _query += "WHERE "
+            _query += _comp
+
+        _res = self.cursor.execute(_query).fetchall()
+        _cols = [col[0] for col in self.cursor.description]
+        self._disconnect()
+        return _res, _cols

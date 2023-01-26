@@ -4,6 +4,7 @@ from core.utils.constants import LIBRARY_NAME
 from core.registration import register_user, register_book, register_customer, register_local, register_order, register_price_list, register_publisher
 from core.lists import list_local, list_book, list_customer, list_price_list
 from core.utils.cls import cls
+from core.search import search_customer
 
 class Menus:
     def __init__(self, user:str) -> None:
@@ -45,6 +46,71 @@ class Menus:
             [0, "Voltar ao menu anterior"],
         ]
         print(tabulate(_menu, _headers, tablefmt="psql"))
+
+    def _customer_filter_menu(self):
+        self._main_header("Filtros")
+        _headers = ["Opção", "Filtro"]
+        _menu = {
+            1: ["Código Cliente", "customer_id"],
+            2: ["Situação", "active"],
+            3: ["Nome", "name"],
+            4: ["E-mail", "email"],
+            5: ["CPF", "registration_id"],
+            6: ["Nome da rua", "street_name"],
+            7: ["Número da casa","number"],
+            8: ["Cidade", "city"],
+            9: ["Estado", "state"],
+            10: ["CEP", "street_id"],
+            11: ["Complemento", "reference"],
+            12: ["Tipo de contato", "contact_type"],
+            13: ["DDD", "ddd"],
+            14: ["Número do contato", "tel_number"],
+            15: ["Situação número", "active_number"]
+        }
+
+        _menu_user = []
+        self._menu_db = []
+
+        for _item in _menu.items():
+            _menu_user.append([_item[0], _item[1][0]])
+            self._menu_db.append([_item[0], _item[1][1]])
+
+        _menu_user.append([0, "FINALIZAR"])
+
+        print(tabulate(_menu_user, _headers, tablefmt="psql"))
+
+    def _mount_customer_filter(self):
+        _collected_answers = []
+        while True:
+            cls()
+
+            self._customer_filter_menu()
+
+            if _collected_answers:
+                print("\nFiltros escolhidos:", _collected_answers)
+
+            _answer = self._collect_answer()
+            if _answer in range(1, len(self._menu_db)+1) and _answer not in _collected_answers:
+                _collected_answers.append(_answer)
+            elif _answer in _collected_answers:
+                input("Valor já está inserido, escolha outro filtro ou finalize.")
+            elif _answer == 0:
+                break
+            else:
+                input("Valor inválido, insira uma opção da lista")
+
+        return _collected_answers
+
+    def _apply_customer_filters(self) -> list:
+        _filters = self._mount_customer_filter()
+        _column_names = []
+        for _filter in _filters:
+            _column_names.append(self._menu_db[_filter-1])
+
+        _search = search_customer.SearchCustomer(self._user)
+        _info = _search.search(_column_names)
+        
+        return _info
 
     def _answer_sub_menu_1(self):
         while True:
@@ -160,7 +226,10 @@ class Menus:
                     print(tabulate(_info[0], headers=_info[1]))
                     input("\n\nAperte ENTER para voltar.")
                 case 2:
-                    ...
+                    cls()
+                    _info = self._apply_customer_filters()
+                    print(tabulate(_info[0], headers=_info[1]))
+                    input("\n\nAperte ENTER para voltar.")
                 case 3:
                     cls()
                     print("Lista de todos os livros:\n\n")
