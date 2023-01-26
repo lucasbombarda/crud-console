@@ -1,4 +1,4 @@
-from database.database import Database
+from core.database.database import Database
 
 class SearchCustomer:
     def __init__(self, user) -> None:

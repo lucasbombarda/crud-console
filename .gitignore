@@ -4,3 +4,6 @@
 /core/database/*.sql
 /core/database/*.sqlite
 /core/database/*.drawio
+
+.coverage
+.pytest_cache

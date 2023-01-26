@@ -1,9 +1,9 @@
 from art import tprint
 from tabulate import tabulate
-from utils.constants import LIBRARY_NAME
-from registration import register_user, register_book, register_customer, register_local, register_order, register_price_list, register_publisher
-from lists import list_local, list_book, list_customer, list_price_list
-from utils.cls import cls
+from core.utils.constants import LIBRARY_NAME
+from core.registration import register_user, register_book, register_customer, register_local, register_order, register_price_list, register_publisher
+from core.lists import list_local, list_book, list_customer, list_price_list
+from core.utils.cls import cls
 
 class Menus:
     def __init__(self, user:str) -> None:
@@ -151,7 +151,6 @@ class Menus:
             self._sub_menu_2()
 
             _answer = self._collect_answer()
-
             match _answer:
                 case 1:
                     cls()

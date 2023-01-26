@@ -1,6 +1,6 @@
-from database.database import Database
-from utils.validations import Validations
-from utils.cls import cls
+from core.database.database import Database
+from core.utils.validations import Validations
+from core.utils.cls import cls
 
 class RegisterCustomer:
     def __init__(self, user) -> None:

@@ -1,5 +1,5 @@
-from database.database import Database
-from utils.validations import Validations
+from core.database.database import Database
+from core.utils.validations import Validations
 
 class RegisterLocal:
     def __init__(self, user) -> None:
